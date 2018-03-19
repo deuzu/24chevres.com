@@ -7,3 +7,10 @@ github-democrat
 export VERSION=v0.1.1
 wget https://github.com/deuzu/github-democrat/releases/download/$VERSION/github-democrat-aws-lambda.zip
 ```
+
+## Deployment
+
+```sh
+terraform plan
+terraform apply
+```

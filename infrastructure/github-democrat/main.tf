@@ -1,6 +1,6 @@
 # Provider
 provider "aws" {
-  region = "eu-west-3"
+  region = "${var.region}"
 }
 
 # IAM role for github democrat lambda
@@ -42,24 +42,24 @@ resource "aws_lambda_function" "github_democrat" {
 
   environment = {
     variables = {
-      GITHUB_ORGANIZATION                                = "24chevres"
-      GITHUB_REPOSITORY                                  = "24chevres.com"
-      GITHUB_OAUTH_TOKEN                                 = "TODO"
-      GITHUB_PULLREQUEST_DESCRIPTION_PREFIX_READYTOMERGE = "[RDY]"
+      GITHUB_ORGANIZATION                                = "${var.github.organization}"
+      GITHUB_REPOSITORY                                  = "${var.github.repository}"
+      GITHUB_OAUTH_TOKEN                                 = "${var.github.oauthToken}"
+      GITHUB_PULLREQUEST_DESCRIPTION_PREFIX_READYTOMERGE = "${var.github.pullRequestDescriptionPrefixReadyToMerge}"
     }
   }
 }
 
 # CloudWatch event
-resource "aws_cloudwatch_event_rule" "every_hour" {
-  name                = "every-hour"
-  description         = "Fires every hour"
-  schedule_expression = "rate(1 hour)"
+resource "aws_cloudwatch_event_rule" "every" {
+  name                = "every"
+  description         = "Fires ${var.scheduledEventRate}"
+  schedule_expression = "rate(${var.scheduledEventRate})"
 }
 
 # CloudWatch event target
 resource "aws_cloudwatch_event_target" "github_democrat_every_hour" {
-  rule      = "${aws_cloudwatch_event_rule.every_hour.name}"
+  rule      = "${aws_cloudwatch_event_rule.every.name}"
   target_id = "github_democrat"
   arn       = "${aws_lambda_function.github_democrat.arn}"
 }
